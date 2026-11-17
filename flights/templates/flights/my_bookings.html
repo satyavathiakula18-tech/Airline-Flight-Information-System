@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings | Airline System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #243b55;
+        }
+
+        header {
+            background: #102a43;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .booking-card {
+            background: white;
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        }
+
+        .booking-card h3 {
+            color: #1769aa;
+        }
+
+        .booking-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+        }
+
+        .status {
+            color: #16803c;
+            font-weight: bold;
+        }
+
+        .price {
+            color: #16803c;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #1769aa;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .empty {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px;
+        }
+
+        .cancel-btn {
+    margin-top: 15px;
+    padding: 11px 18px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cancel-btn:hover {
+    background: #b02a37;
+}
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎫 My Bookings</h1>
+    <p>Manage your flight reservations</p>
+</header>
+
+<div class="container">
+
+    <h2>Welcome, {{ user.username }}!</h2>
+
+    {% for booking in bookings %}
+
+        <div class="booking-card">
+
+            <h3>Booking #{{ booking.id }}</h3>
+
+            <div class="booking-row">
+                <strong>Flight</strong>
+                <span>{{ booking.flight.flight_number }}</span>
+            </div>
+
+            <div class="booking-row">
+                <strong>Airline</strong>
+                <span>{{ booking.flight.airline.name }}</span>
+            </div>
+
+            <div class="booking-row">
+                <strong>Route</strong>
+                <span>
+                    {{ booking.flight.source.city }}
+                    →
+                    {{ booking.flight.destination.city }}
+                </span>
+            </div>
+
+            <div class="booking-row">
+                <strong>Travel Class</strong>
+                <span>{{ booking.travel_class }}</span>
+            </div>
+
+            <div class="booking-row">
+                <strong>Passengers</strong>
+                <span>{{ booking.passengers }}</span>
+            </div>
+
+            <div class="booking-row">
+                <strong>Total Price</strong>
+                <span class="price">
+                    ₹{{ booking.total_price|floatformat:2 }}
+                </span>
+            </div>
+
+            <div class="booking-row">
+                <strong>Booking Date</strong>
+                <span>{{ booking.booking_date|date:"d M Y, h:i A" }}</span>
+            </div>
+
+            <div class="booking-row">
+                <strong>Status</strong>
+                <span class="status">{{ booking.booking_status }}</span>
+            </div>
+            {% if booking.booking_status == "Confirmed" %}
+
+<form method="POST"
+      action="{% url 'cancel_booking' booking.id %}"
+      onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+
+    {% csrf_token %}
+
+    <button type="submit" class="cancel-btn">
+        Cancel Booking
+    </button>
+
+</form>
+
+{% endif %}
+        </div>
+
+    {% empty %}
+
+        <div class="empty">
+            <h3>No bookings yet!</h3>
+            <p>Your flight reservations will appear here.</p>
+        </div>
+
+    {% endfor %}
+
+    <a href="{% url 'search_flights' %}" class="back-btn">
+        ← Back to Flights
+    </a>
+
+</div>
+
+</body>
+</html>

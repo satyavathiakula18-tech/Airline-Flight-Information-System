@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Notifications</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #172554;
+        }
+
+        header {
+            background: #102a43;
+            color: white;
+            padding: 25px 8%;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .notification {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #087e8b;
+            box-shadow: 0 3px 12px #00000010;
+        }
+
+        .unread {
+            background: #e0f2fe;
+            border-left-color: #1769aa;
+        }
+
+        .read {
+            opacity: 0.8;
+        }
+
+        .mark-btn {
+            background: #1769aa;
+            color: white;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .top-actions {
+            margin-bottom: 20px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 20px;
+            color: #1769aa;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .empty {
+            background: white;
+            padding: 35px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .date {
+            color: #64748b;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🔔 My Notifications</h1>
+    <p>You have {{ unread_count }} unread notification(s).</p>
+</header>
+
+<div class="container">
+
+    <div class="top-actions">
+        {% if unread_count > 0 %}
+            <form method="POST" action="{% url 'mark_all_read' %}">
+                {% csrf_token %}
+                <button class="mark-btn" type="submit">
+                    Mark All as Read
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
+    {% for notification in notifications %}
+
+        <div class="notification
+            {% if notification.is_read %}read{% else %}unread{% endif %}">
+
+            <h3>{{ notification.title }}</h3>
+
+            <p>{{ notification.message }}</p>
+
+            <p class="date">
+                {{ notification.created_at|date:"d M Y, h:i A" }}
+            </p>
+
+            {% if not notification.is_read %}
+
+                <form method="POST"
+                      action="{% url 'mark_notification_read' notification.id %}">
+
+                    {% csrf_token %}
+
+                    <button type="submit" class="mark-btn">
+                        Mark as Read
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <span>✓ Read</span>
+
+            {% endif %}
+
+        </div>
+
+    {% empty %}
+
+        <div class="empty">
+            <h2>📭 No Notifications Yet</h2>
+            <p>Your booking updates will appear here.</p>
+        </div>
+
+    {% endfor %}
+
+    <a href="/" class="back">← Back to Home</a>
+
+</div>
+
+</body>
+</html>

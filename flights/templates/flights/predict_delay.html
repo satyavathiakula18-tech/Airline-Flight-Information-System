@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Flight Delay Prediction | Airline System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eaf2ff, #f5f7fb);
+            margin: 0;
+            padding: 30px 15px;
+            color: #263445;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 35px rgba(20, 50, 90, 0.10);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header .icon {
+            font-size: 42px;
+        }
+
+        h1 {
+            color: #173b65;
+            margin: 10px 0;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .section-title {
+            color: #173b65;
+            font-size: 18px;
+            margin: 25px 0 15px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            font-size: 13px;
+            color: #34445a;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d6deea;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #1769aa;
+            box-shadow: 0 0 0 3px rgba(23, 105, 170, 0.12);
+        }
+
+        .hint {
+            font-size: 11px;
+            color: #8995a5;
+            margin-top: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 28px;
+            background: linear-gradient(90deg, #1769aa, #174a83);
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 105, 170, 0.25);
+        }
+
+        /* Prediction result */
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 13px;
+            text-align: center;
+            background: #f5f8fc;
+            border: 1px solid #e1e8f0;
+        }
+
+        .result h2 {
+            margin-top: 0;
+            color: #173b65;
+        }
+
+        .prediction-status {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .delayed {
+            color: #dc3545;
+        }
+
+        .ontime {
+            color: #16834a;
+        }
+
+        .probability {
+            font-size: 38px;
+            font-weight: bold;
+            color: #173b65;
+            margin: 10px 0;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 13px;
+            background: #dfe6ef;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 18px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.8s ease;
+        }
+
+        .risk {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .risk-success {
+            color: #146c43;
+            background: #d1e7dd;
+        }
+
+        .risk-warning {
+            color: #997404;
+            background: #fff3cd;
+        }
+
+        .risk-danger {
+            color: #b02a37;
+            background: #f8d7da;
+        }
+
+        .details {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 9px;
+            font-size: 13px;
+            color: #65748b;
+            line-height: 1.8;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: #7c8796;
+            margin-top: 18px;
+            line-height: 1.6;
+        }
+
+        .error {
+            margin-top: 20px;
+            padding: 13px;
+            color: #b00020;
+            background: #ffe9ec;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #1769aa;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+        /* Individual Explainable AI */
+
+        .xai-section {
+            margin-top: 25px;
+            padding: 22px;
+            background: #f8faff;
+            border: 1px solid #dce6f2;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .xai-section h2 {
+            color: #173b65;
+            margin-top: 0;
+        }
+
+        .xai-intro {
+            color: #718096;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .xai-group {
+            margin-top: 25px;
+        }
+
+        .xai-group h3 {
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .xai-item {
+            margin-bottom: 18px;
+        }
+
+        .xai-info {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 7px;
+            overflow-wrap: anywhere;
+        }
+
+        .xai-track {
+            width: 100%;
+            height: 11px;
+            background: #e3e9f1;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .xai-bar {
+            height: 100%;
+            border-radius: 20px;
+        }
+
+        .xai-positive {
+            background: #dc554f;
+        }
+
+        .xai-negative {
+            background: #16834a;
+        }
+
+        .xai-score {
+            padding: 13px;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            color: #173b65;
+            font-size: 14px;
+        }
+
+        .xai-disclaimer {
+            color: #718096;
+            font-size: 11px;
+            line-height: 1.6;
+            margin-top: 18px;
+        }
+
+        .xai-error {
+            margin-top: 15px;
+            padding: 12px;
+            background: #fff3cd;
+            color: #856404;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        @media(max-width: 600px) {
+            .container {
+                padding: 22px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+
+            .probability {
+                font-size: 32px;
+            }
+
+            .xai-info {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+
+    <div class="header">
+        <div class="icon">✈️</div>
+
+        <h1>Flight Delay Prediction</h1>
+
+        <p class="subtitle">
+            Machine Learning Based Flight Departure Delay Prediction System
+        </p>
+    </div>
+
+    <!-- Input Form -->
+
+    <h3 class="section-title">Enter Flight Information</h3>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-grid">
+
+            <div>
+                <label>Year</label>
+                <input
+                    type="number"
+                    name="year"
+                    value="2022"
+                    min="2010"
+                    max="2035"
+                    required
+                >
+            </div>
+
+            <div>
+                <label>Month</label>
+                <input
+                    type="number"
+                    name="month"
+                    min="1"
+                    max="12"
+                    placeholder="12"
+                    required
+                >
+            </div>
+
+            <div>
+                <label>Day of Month</label>
+                <input
+                    type="number"
+                    name="day"
+                    min="1"
+                    max="31"
+                    placeholder="15"
+                    required
+                >
+            </div>
+
+            <div>
+                <label>Day of Week</label>
+                <input
+                    type="number"
+                    name="weekday"
+                    min="1"
+                    max="7"
+                    placeholder="4"
+                    required
+                >
+                <div class="hint">Monday = 1, Sunday = 7</div>
+            </div>
+
+            <div>
+                <label>Airline Code</label>
+                <input
+                    type="text"
+                    name="airline"
+                    placeholder="AA"
+                >
+                <div class="hint">
+                    Optional. Not used by the advanced model.
+                </div>
+            </div>
+
+            <div>
+                <label>Origin Airport</label>
+                <input
+                    type="text"
+                    name="origin"
+                    placeholder="JFK"
+                    maxlength="3"
+                    required
+                >
+            </div>
+
+            <div>
+                <label>Destination Airport</label>
+                <input
+                    type="text"
+                    name="destination"
+                    placeholder="LAX"
+                    maxlength="3"
+                    required
+                >
+            </div>
+
+            <div>
+                <label>Departure Time (HHMM)</label>
+                <input
+                    type="number"
+                    name="departure_time"
+                    placeholder="1800"
+                    min="0"
+                    max="2359"
+                    required
+                >
+                <div class="hint">Example: 6:00 PM = 1800</div>
+            </div>
+
+            <div>
+                <label>Distance (Miles)</label>
+                <input
+                    type="number"
+                    name="distance"
+                    placeholder="2475"
+                    min="1"
+                    step="0.1"
+                    required
+                >
+            </div>
+
+        </div>
+
+        <button type="submit">
+            🔍 Predict Flight Delay
+        </button>
+
+    </form>
+
+    <!-- Prediction Result -->
+
+    {% if prediction %}
+
+        <div class="result">
+
+            <h2>Prediction Result</h2>
+
+            <div class="prediction-status
+                {% if prediction == 'Likely Delayed' %}
+                    delayed
+                {% else %}
+                    ontime
+                {% endif %}
+            ">
+
+                {% if prediction == 'Likely Delayed' %}
+                    ⚠️ {{ prediction }}
+                {% else %}
+                    ✅ {{ prediction }}
+                {% endif %}
+
+            </div>
+
+            <div class="probability">
+                {{ probability }}%
+            </div>
+
+            <p>Estimated Delay Probability</p>
+
+            <div class="progress-track">
+                <div
+                    class="progress-fill"
+                    style="
+                        width: {{ probability }}%;
+                        background:
+                        {% if risk_level == 'Low' %}
+                            #198754
+                        {% elif risk_level == 'Medium' %}
+                            #ffc107
+                        {% else %}
+                            #dc3545
+                        {% endif %};
+                    "
+                ></div>
+            </div>
+
+            {% if risk_level %}
+
+                <div class="
+                    {% if risk_level == 'Low' %}
+                        risk risk-success
+                    {% elif risk_level == 'Medium' %}
+                        risk risk-warning
+                    {% else %}
+                        risk risk-danger
+                    {% endif %}
+                ">
+                    {{ risk_level }} Risk
+                </div>
+
+            {% endif %}
+
+            <!-- Model Information -->
+
+            <div class="details">
+
+                {% if model_name %}
+                    <div>
+                        <strong>Model:</strong>
+                        {{ model_name }}
+                    </div>
+                {% endif %}
+
+                {% if threshold %}
+                    <div>
+                        <strong>Classification Threshold:</strong>
+                        {{ threshold }}%
+                    </div>
+                {% endif %}
+
+                <div>
+                    <strong>Prediction:</strong>
+                    {{ prediction }}
+                </div>
+
+            </div>
+
+            <!-- Individual XAI Explanation -->
+
+            {% if explanation_items %}
+
+                <div class="xai-section">
+
+                    <h2>🧠 Why This Prediction?</h2>
+
+                    <p class="xai-intro">
+                        This explanation shows how individual flight
+                        features influence the Logistic Regression
+                        model's decision score.
+                    </p>
+
+                    {% if decision_score != None %}
+
+                        <div class="xai-score">
+                            <strong>Model Decision Score:</strong>
+                            {{ decision_score|floatformat:6 }}
+                        </div>
+
+                    {% endif %}
+
+                    <!-- Positive Contributions -->
+
+                    <div class="xai-group">
+
+                        <h3 style="color: #dc554f;">
+                            ↑ Factors Pushing Towards Delay
+                        </h3>
+
+                        {% for item in positive_contributions %}
+
+                            <div class="xai-item">
+
+                                <div class="xai-info">
+                                    <strong>{{ item.feature }}</strong>
+
+                                    <span>
+                                        +{{ item.contribution|floatformat:6 }}
+                                    </span>
+                                </div>
+
+                                <div class="xai-track">
+
+                                    <div
+                                        class="xai-bar xai-positive"
+                                        style="width: {{ item.bar_width }}%;"
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+                        {% empty %}
+
+                            <p class="xai-intro">
+                                No positive contributions found.
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <!-- Negative Contributions -->
+
+                    <div class="xai-group">
+
+                        <h3 style="color: #16834a;">
+                            ↓ Factors Pushing Away From Delay
+                        </h3>
+
+                        {% for item in negative_contributions %}
+
+                            <div class="xai-item">
+
+                                <div class="xai-info">
+                                    <strong>{{ item.feature }}</strong>
+
+                                    <span>
+                                        {{ item.contribution|floatformat:6 }}
+                                    </span>
+                                </div>
+
+                                <div class="xai-track">
+
+                                    <div
+                                        class="xai-bar xai-negative"
+                                        style="width: {{ item.bar_width }}%;"
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+                        {% empty %}
+
+                            <p class="xai-intro">
+                                No negative contributions found.
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <p class="xai-disclaimer">
+                        These values represent contributions to the
+                        Logistic Regression decision score. Positive
+                        values push the score towards delay, while
+                        negative values push it away from delay.
+                        They do not establish causal effects or
+                        represent percentage changes in probability.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+            {% if explanation_error %}
+
+                <div class="xai-error">
+                    {{ explanation_error }}
+                </div>
+
+            {% endif %}
+
+            <!-- Disclaimer -->
+
+            <p class="disclaimer">
+                This result is an experimental machine-learning
+                estimate based on historical US flight data.
+                It is not a live flight status, guaranteed delay
+                prediction, or calibrated real-world probability.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+    <!-- Prediction Error -->
+
+    {% if error %}
+
+        <div class="error">
+            <strong>Prediction Error:</strong>
+            {{ error }}
+        </div>
+
+    {% endif %}
+
+    <a class="back" href="/">
+        ← Back to Home
+    </a>
+
+</div>
+
+</body>
+</html>

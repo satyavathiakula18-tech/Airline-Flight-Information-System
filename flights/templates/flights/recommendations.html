@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Flight Recommendations</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #172554;
+        }
+
+        header {
+            background: #102a43;
+            color: white;
+            padding: 25px 8%;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .flight-card, .empty, .preference-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px #00000010;
+        }
+
+        .flight-card {
+            border-left: 5px solid #087e8b;
+        }
+
+        .score {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .price {
+            color: #087e8b;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .reason {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #075985;
+            padding: 6px 9px;
+            margin: 4px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .details-btn {
+            display: inline-block;
+            background: #1769aa;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 7px;
+            text-decoration: none;
+            margin-top: 12px;
+        }
+
+        .back {
+            display: block;
+            margin-top: 20px;
+            color: #1769aa;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎯 My Flight Recommendations</h1>
+    <p>Flights selected according to your preferences.</p>
+</header>
+
+<div class="container">
+
+    <div class="preference-card">
+        <h2>Your Preferences</h2>
+
+        <p>
+            Airline:
+            {{ preference.preferred_airline|default:"Any airline" }}
+        </p>
+
+        <p>
+            From:
+            {{ preference.preferred_source|default:"Any airport" }}
+        </p>
+
+        <p>
+            To:
+            {{ preference.preferred_destination|default:"Any destination" }}
+        </p>
+
+        <p>
+            Travel Class: {{ preference.preferred_class }}
+        </p>
+
+        <p>
+            Budget:
+            {% if preference.max_budget != None %}
+                ₹{{ preference.max_budget }}
+            {% else %}
+                Not specified
+            {% endif %}
+        </p>
+
+        <a href="{% url 'my_preferences' %}" class="details-btn">
+            Edit Preferences
+        </a>
+    </div>
+
+    <h2>✨ Recommended Flights</h2>
+
+    {% for flight in recommendations %}
+
+        <div class="flight-card">
+
+            <span class="score">
+                {{ flight.recommendation_score }} Preference Points
+            </span>
+
+            <h3>
+                {{ flight.airline.name }}
+                ({{ flight.flight_number }})
+            </h3>
+
+            <h3>
+                {{ flight.source.code }}
+                → {{ flight.destination.code }}
+            </h3>
+
+            <p>
+                Departure:
+                {{ flight.departure_time|date:"d M Y, H:i" }}
+            </p>
+
+            <p>
+                Arrival:
+                {{ flight.arrival_time|date:"d M Y, H:i" }}
+            </p>
+
+            <p>
+                Travel Class: {{ preference.preferred_class }}
+            </p>
+
+            <p class="price">
+                ₹{{ flight.recommendation_price|floatformat:2 }}
+            </p>
+
+            <h4>Why we recommend this flight:</h4>
+
+            {% for reason in flight.recommendation_reasons %}
+                <span class="reason">{{ reason }}</span>
+            {% empty %}
+                <span class="reason">
+                    Available flight matching your selected travel class
+                </span>
+            {% endfor %}
+
+            <br>
+
+            <a href="{% url 'flight_details' flight.id %}"
+               class="details-btn">
+                View Flight Details →
+            </a>
+
+        </div>
+
+    {% empty %}
+
+        <div class="empty">
+            <h3>No recommendations available right now.</h3>
+            <p>
+                Try updating your preferences or adding more upcoming
+                flights through the admin panel.
+            </p>
+
+            <a href="{% url 'my_preferences' %}" class="details-btn">
+                Update Preferences
+            </a>
+        </div>
+
+    {% endfor %}
+
+    <a href="/" class="back">← Back to Home</a>
+
+</div>
+
+</body>
+</html>

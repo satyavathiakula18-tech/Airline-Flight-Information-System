@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explainable AI | Airline System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            font-family: Arial, sans-serif;
+            background: #f3f6fb;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #123c69, #247ba0);
+            color: white;
+            padding: 30px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin-top: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 22px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .feature {
+            margin: 22px 0;
+        }
+
+        .feature-info {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .bar-background {
+            width: 100%;
+            height: 13px;
+            background: #e8edf4;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            background: #247ba0;
+            border-radius: 20px;
+        }
+
+        .description {
+            color: #64748b;
+            line-height: 1.7;
+        }
+
+        .highlight {
+            background: #eaf4ff;
+            border-left: 5px solid #247ba0;
+            padding: 17px;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        .error {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 12px 20px;
+            background: #123c69;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        @media(max-width: 600px) {
+            .feature-info {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="header">
+        <h1>Explainable AI Dashboard</h1>
+        <p>Understand which factors influence flight delay predictions.</p>
+    </div>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% else %}
+
+        <div class="card">
+            <h2>Feature Importance Analysis</h2>
+
+            <p class="description">
+                This chart displays permutation feature importance
+                measured using the decrease in validation F1-score
+                when each feature is shuffled.
+            </p>
+
+            {% for feature in features %}
+                <div class="feature">
+
+                    <div class="feature-info">
+                        <span>{{ feature.name }}</span>
+                        <span>{{ feature.importance|floatformat:6 }}</span>
+                    </div>
+
+                    <div class="bar-background">
+                        <div class="bar"
+                             style="width: {{ feature.width }}%;">
+                        </div>
+                    </div>
+
+                    <p class="description">
+                        Standard deviation:
+                        {{ feature.std|floatformat:6 }}
+                    </p>
+
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="card">
+            <h2>Key Findings</h2>
+
+            <div class="highlight">
+                <strong>Most influential feature:</strong>
+                Scheduled Departure Time (CRSDepTime).
+                <br><br>
+
+                <strong>Second most influential:</strong>
+                Destination Airport.
+                <br><br>
+
+                <strong>Third most influential:</strong>
+                Origin Airport.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>What does this mean?</h2>
+
+            <p class="description">
+                The model relies most heavily on scheduled departure
+                time when distinguishing delayed and non-delayed flights
+                in the validation dataset.
+
+                Origin and destination airports also contribute to
+                its predictions.
+
+                Year and Month showed zero measured permutation
+                importance in this evaluation.
+            </p>
+
+            <p class="description">
+                These results describe model behavior. They do not
+                establish that a feature causes a flight delay.
+                They are global explanations, not explanations of
+                an individual flight prediction.
+            </p>
+        </div>
+
+    {% endif %}
+
+    <a href="{% url 'predict_flight_delay_advanced' %}"
+       class="back-button">
+        Back to Flight Prediction
+    </a>
+
+</div>
+</body>
+</html>

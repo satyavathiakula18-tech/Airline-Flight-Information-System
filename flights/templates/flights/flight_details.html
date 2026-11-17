@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Details</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #243b55;
+        }
+
+        header {
+            background: #102a43;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .flight-card {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .flight-number {
+            font-size: 25px;
+            font-weight: bold;
+            color: #1769aa;
+        }
+
+        .airline {
+            color: #666;
+            margin: 10px 0 25px;
+        }
+
+        .route {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .airport {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .airport h2 {
+            font-size: 28px;
+            margin: 5px 0;
+        }
+
+        .airport p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .arrow {
+            font-size: 30px;
+            color: #1769aa;
+        }
+
+        .details {
+            background: #f5f7fb;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+            gap: 15px;
+        }
+
+        .price-section {
+            margin-top: 25px;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 13px;
+            margin-bottom: 10px;
+            background: #f5f7fb;
+            border-radius: 8px;
+        }
+
+        .price {
+            color: #16803c;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 20px;
+            background: #1769aa;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .back-btn:hover {
+            background: #104d80;
+        }
+        .book-btn {
+    display: inline-block;
+    margin-top: 25px;
+    margin-right: 10px;
+    padding: 12px 22px;
+    background: #16803c;
+    color: white;
+    text-decoration: none;
+    border-radius: 7px;
+    font-weight: bold;
+}
+
+.book-btn:hover {
+    background: #10632e;
+}
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>✈ Flight Information</h1>
+    <p>Complete Flight Details</p>
+</header>
+
+<div class="container">
+
+    <div class="flight-card">
+
+        <div class="flight-number">
+            {{ flight.flight_number }}
+        </div>
+
+        <div class="airline">
+            {{ flight.airline.name }} ({{ flight.airline.code }})
+        </div>
+
+        <div class="route">
+
+            <div class="airport">
+                <h2>{{ flight.source.code }}</h2>
+                <p>{{ flight.source.city }}</p>
+                <p>{{ flight.source.name }}</p>
+            </div>
+
+            <div class="arrow">✈ →</div>
+
+            <div class="airport">
+                <h2>{{ flight.destination.code }}</h2>
+                <p>{{ flight.destination.city }}</p>
+                <p>{{ flight.destination.name }}</p>
+            </div>
+
+        </div>
+
+        <div class="details">
+
+            <div class="detail-row">
+                <strong>Departure</strong>
+                <span>{{ flight.departure_time|date:"d M Y, h:i A" }}</span>
+            </div>
+
+            <div class="detail-row">
+                <strong>Arrival</strong>
+                <span>{{ flight.arrival_time|date:"d M Y, h:i A" }}</span>
+            </div>
+
+            <div class="detail-row">
+                <strong>Total Seats</strong>
+                <span>{{ flight.total_seats }}</span>
+            </div>
+
+            <div class="detail-row">
+                <strong>Available Seats</strong>
+                <span>{{ flight.available_seats }}</span>
+            </div>
+
+        </div>
+
+        <div class="price-section">
+
+            <h3>💰 Available Ticket Prices</h3>
+
+            {% for ticket in flight.prices.all %}
+
+                <div class="price-item">
+                    <strong>{{ ticket.travel_class }}</strong>
+
+                    <span class="price">
+                        ₹{{ ticket.price|floatformat:2 }}
+                    </span>
+                </div>
+
+            {% empty %}
+
+                <p>Ticket prices are not available.</p>
+
+            {% endfor %}
+
+        </div>
+        {% if user.is_authenticated and flight.available_seats > 0 %}
+
+    <a href="{% url 'book_flight' flight.id %}" class="book-btn">
+        🎫 Book Flight
+    </a>
+
+{% elif not user.is_authenticated %}
+
+    <a href="{% url 'login' %}" class="book-btn">
+        Login to Book
+    </a>
+
+{% else %}
+
+    <p style="color:red; font-weight:bold;">
+        No seats available!
+    </p>
+
+{% endif %}
+        <a href="{% url 'search_flights' %}" class="back-btn">
+            ← Back to Flights
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

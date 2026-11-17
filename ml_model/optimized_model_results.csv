@@ -1,0 +1,2 @@
+Dataset,Threshold,Accuracy,Precision,Recall,F1 Score,Balanced Accuracy,ROC AUC,PR AUC,Best Parameters
+December Final Test,0.47000000000000025,0.5555461068296572,0.3371481657179001,0.6732849135549065,0.44930590311619206,0.592719615969202,0.6328597172683181,0.3766331630265954,"{'n_estimators': 60, 'max_depth': 18, 'min_samples_leaf': 10}"

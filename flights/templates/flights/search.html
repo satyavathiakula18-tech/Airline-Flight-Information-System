@@ -1,0 +1,914 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Airline Flight Information System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #172554;
+        }
+
+        header {
+            background: #102a43;
+            color: white;
+            padding: 30px 8%;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        header p {
+            color: #cbd5e1;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .search-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px #00000010;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        select,
+        input[type="date"],
+        button {
+            padding: 14px;
+            border-radius: 7px;
+            border: 1px solid #cbd5e1;
+            flex: 1;
+            min-width: 180px;
+            font-size: 14px;
+        }
+
+        button {
+            background: #087e8b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #05616b;
+        }
+
+        .section-title {
+            margin: 30px 0 20px;
+        }
+
+        .flight-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px #00000010;
+        }
+
+        .flight-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .airline-name {
+            color: #087e8b;
+            font-size: 21px;
+            margin-bottom: 5px;
+        }
+
+        .flight-number {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .route {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+            margin: 25px 0;
+            text-align: center;
+            flex-wrap: wrap;
+        }
+
+        .airport-code {
+            font-size: 27px;
+            font-weight: bold;
+            color: #102a43;
+        }
+
+        .airport-city {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .route-arrow {
+            color: #087e8b;
+            font-size: 25px;
+        }
+
+        .flight-info {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 15px 0;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .info-label {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .info-value {
+            font-weight: bold;
+            margin-top: 7px;
+        }
+
+        .price-section {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 18px;
+            margin-top: 10px;
+        }
+
+        .price-section h4 {
+            margin-bottom: 15px;
+        }
+
+        .price-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .price-item {
+            background: #f0fdfa;
+            border: 1px solid #99f6e4;
+            padding: 15px 20px;
+            border-radius: 9px;
+            min-width: 160px;
+        }
+
+        .price-class {
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .price-value {
+            color: #087e8b;
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .cheapest {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 5px 9px;
+            border-radius: 5px;
+            font-size: 11px;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            color: #64748b;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 22px;
+            }
+
+            .flight-info {
+                flex-direction: column;
+            }
+
+            .route {
+                justify-content: space-between;
+            }
+        }
+
+        .recommended-card {
+    background: #e8f5e9;
+    border: 2px solid #2e7d32;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.recommended-card h2 {
+    color: #2e7d32;
+    margin-bottom: 12px;
+}
+
+.recommended-card h3 {
+    margin-bottom: 10px;
+}
+
+.price-section {
+    margin-top: 18px;
+    padding: 15px;
+    background: #f5f7fb;
+    border-radius: 10px;
+}
+
+.price-section h4 {
+    margin-bottom: 12px;
+    color: #243b55;
+}
+
+.price-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.price-class {
+    font-weight: 600;
+}
+
+.price-value {
+    color: #16803c;
+    font-weight: bold;
+}
+
+.cheapest {
+    background: #d9f5df;
+    color: #167532;
+    padding: 5px 9px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.user-menu {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+
+.user-menu span {
+    color: #102a43;
+    font-weight: 800;
+    font-size: 17px;
+    background: #e3efff;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+.auth-btn {
+    display: inline-block;
+    padding: 9px 18px;
+    background: #1769aa;
+    color: white;
+    text-decoration: none;
+    border-radius: 7px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.auth-btn:hover {
+    background: #104d80;
+}
+
+.flight-actions {
+    margin-top: 18px;
+}
+
+.details-btn {
+    display: inline-block;
+    padding: 11px 20px;
+    background: #1769aa;
+    color: white;
+    text-decoration: none;
+    border-radius: 7px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.details-btn:hover {
+    background: #104d80;
+    transform: translateY(-2px);
+}
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>✈ Airline Flight Information System</h1>
+    
+<div class="user-menu">
+
+    <a href="{% url 'predict_flight_delay' %}" class="auth-btn">
+        ✈️ Flight Delay Prediction
+    </a>
+
+    {% if user.is_authenticated %}
+
+        <span>
+            Welcome, {{ user.username }}!
+        </span>
+        <a href="{% url 'prediction_history' %}" class="auth-btn">
+    📊 Prediction History
+</a>
+
+        <a href="{% url 'logout' %}" class="auth-btn">
+            Logout
+        </a>
+
+    {% else %}
+
+        <a href="{% url 'login' %}" class="auth-btn">
+            Login
+        </a>
+
+        <a href="{% url 'register' %}" class="auth-btn">
+            Register
+        </a>
+
+    {% endif %}
+
+</div>
+<a href="{% url 'my_preferences' %}" class="auth-btn">
+    ⚙️ My Preferences
+</a>
+
+<a href="{% url 'flight_recommendations' %}" class="auth-btn">
+    🎯 My Recommendations
+</a>
+<a href="{% url 'notification_list' %}" class="auth-btn">
+    🔔 Notifications
+</a>
+<a href="{% url 'travel_budget_planner' %}" class="auth-btn">
+    💰 Travel Budget Planner
+</a>
+    <p>Search flights, compare ticket prices and plan your journey.</p>
+</header>
+
+<div class="container">
+    {% if source and destination and cheapest_flight %}
+<div class="recommended-card">
+    <h2>⭐ Cheapest Flight Recommendation</h2>
+
+    <h3>
+        {{ cheapest_flight.airline.name }}
+        ({{ cheapest_flight.flight_number }})
+    </h3>
+
+    <p>
+        {{ cheapest_flight.source.city }}
+        → {{ cheapest_flight.destination.city }}
+    </p>
+
+    <p>
+        **Lowest Ticket Price:**
+        ₹{{ cheapest_flight.cheapest_price|floatformat:2 }}
+    </p>
+</div>
+{% endif %}
+
+    <h2>Find Your Flight</h2>
+
+    <!-- Flight Search Form -->
+
+    <form method="GET" class="search-box">
+
+        <select name="source">
+            <option value="">From: Any Airport</option>
+
+            {% for airport in airports %}
+                <option value="{{ airport.code }}"
+                    {% if source == airport.code %}selected{% endif %}>
+                    {{ airport.city }} ({{ airport.code }})
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="destination">
+            <option value="">To: Any Airport</option>
+
+            {% for airport in airports %}
+                <option value="{{ airport.code }}"
+                    {% if destination == airport.code %}selected{% endif %}>
+                    {{ airport.city }} ({{ airport.code }})
+                </option>
+            {% endfor %}
+        </select>
+
+        <input
+            type="date"
+            name="travel_date"
+            value="{{ travel_date }}"
+        >
+
+        <button type="submit">Search Flights</button>
+
+    </form>
+
+
+    <!-- Flight Results -->
+
+    <h2 class="section-title">Available Flights</h2>
+
+    {% for flight in flights %}
+
+        <div class="flight-card">
+
+            <div class="flight-top">
+
+                <div>
+                    <h3 class="airline-name">
+                        {{ flight.airline.name }}
+                    </h3>
+
+                    <span class="flight-number">
+                        Flight Number: {{ flight.flight_number }}
+                    </span>
+                </div>
+
+                <div>
+                    <strong>✈ Flight Details</strong>
+                </div>
+
+            </div>
+
+
+            <!-- Route Information -->
+
+            <div class="route">
+
+                <div>
+                    <div class="airport-code">
+                        {{ flight.source.code }}
+                    </div>
+
+                    <div class="airport-city">
+                        {{ flight.source.city }}
+                    </div>
+                </div>
+
+                <div class="route-arrow">
+                    ━━━━━ ✈ ━━━━━
+                </div>
+
+                <div>
+                    <div class="airport-code">
+                        {{ flight.destination.code }}
+                    </div>
+
+                    <div class="airport-city">
+                        {{ flight.destination.city }}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- Departure and Arrival -->
+
+            <div class="flight-info">
+
+                <div>
+                    <div class="info-label">Departure</div>
+
+                    <div class="info-value">
+                        {{ flight.departure_time|date:"d M Y, H:i" }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="info-label">Arrival</div>
+
+                    <div class="info-value">
+                        {{ flight.arrival_time|date:"d M Y, H:i" }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="info-label">Total Seats</div>
+
+                    <div class="info-value">
+                        {{ flight.total_seats }}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- Ticket Prices -->
+
+            <div class="price-section">
+
+    <h4>💰 Compare Ticket Prices</h4>
+
+    <div class="price-list">
+
+        {% for ticket in flight.prices.all %}
+
+            <div class="price-item">
+
+                <div class="price-class">
+                    {{ ticket.travel_class }}
+                </div>
+
+                <div class="price-value">
+                    ₹{{ ticket.price|floatformat:2 }}
+                </div>
+
+                {% if ticket.price == flight.cheapest_price %}
+                    <span class="cheapest">
+                        ⭐ LOWEST PRICE
+                    </span>
+                {% endif %}
+
+            </div>
+
+        {% empty %}
+
+            <p>Price not available</p>
+
+        {% endfor %}
+
+    </div>
+    <div class="flight-actions">
+
+    <a href="{% url 'flight_details' flight.id %}"
+       class="details-btn">
+        View Flight Details →
+    </a>
+
+    <a href="{% url 'alternative_flights' flight.id %}"
+       class="details-btn">
+        🔄 Alternative Flights
+    </a>
+
+</div>
+
+</div>
+
+    {% empty %}
+
+        <div class="empty">
+            <h3>No flights found</h3>
+            <p>Try selecting another source, destination or travel date.</p>
+        </div>
+
+    {% endfor %}
+
+</div>
+
+<footer>
+    <p>© 2026 Airline Flight Information System</p>
+    <p>Project Demonstration | Django + Python</p>
+</footer>
+
+
+
+<!-- AeroMate AI Floating Assistant -->
+
+<style>
+    #aeromate-button {
+        position: fixed;
+        right: 25px;
+        bottom: 25px;
+        z-index: 9999;
+        background: #1769ff;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 62px;
+        height: 62px;
+        font-size: 27px;
+        cursor: pointer;
+        box-shadow: 0 5px 20px rgba(0,0,0,.25);
+    }
+
+    #aeromate-panel {
+        display: none;
+        position: fixed;
+        right: 25px;
+        bottom: 100px;
+        width: 350px;
+        height: 480px;
+        max-height: 70vh;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 30px rgba(0,0,0,.25);
+        z-index: 9999;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+    }
+
+    #aeromate-header {
+        background: #1769ff;
+        color: white;
+        padding: 16px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #aeromate-close {
+        background: transparent;
+        color: white;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+    }
+
+    #aeromate-messages {
+        height: 345px;
+        overflow-y: auto;
+        padding: 12px;
+        background: #f4f7fb;
+    }
+
+    .aeromate-message {
+        padding: 10px 13px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+        max-width: 85%;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .aeromate-user {
+        background: #1769ff;
+        color: white;
+        margin-left: auto;
+    }
+
+    .aeromate-bot {
+        background: white;
+        color: #222;
+        border: 1px solid #e1e5ec;
+        margin-right: auto;
+    }
+
+    #aeromate-form {
+        display: flex;
+        padding: 10px;
+        gap: 7px;
+        background: white;
+        border-top: 1px solid #ddd;
+    }
+
+    #aeromate-input {
+        flex: 1;
+        min-width: 0;
+        padding: 11px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        outline: none;
+    }
+
+    #aeromate-send {
+        background: #1769ff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+
+    #aeromate-send:disabled {
+        opacity: .6;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 450px) {
+        #aeromate-panel {
+            right: 10px;
+            left: 10px;
+            bottom: 85px;
+            width: auto;
+        }
+    }
+</style>
+
+<button id="aeromate-button"
+        type="button"
+        aria-label="Open AeroMate AI">
+    ✈
+</button>
+
+<div id="aeromate-panel">
+
+    <div id="aeromate-header">
+        <span>✈ AeroMate AI</span>
+
+        <button id="aeromate-close"
+                type="button"
+                aria-label="Close chat">
+            ×
+        </button>
+    </div>
+
+    <div id="aeromate-messages"
+         aria-live="polite">
+
+        <div class="aeromate-message aeromate-bot">
+            Hello! 👋 I'm AeroMate AI.
+
+            Ask me about flights, bookings,
+            fares, delay predictions and
+            travel budgets.
+        </div>
+
+    </div>
+
+    <form id="aeromate-form">
+        {% csrf_token %}
+
+        <input
+            type="text"
+            id="aeromate-input"
+            placeholder="Ask about your journey..."
+            maxlength="1000"
+            autocomplete="off"
+            required
+        >
+
+        <button id="aeromate-send" type="submit">
+            Send
+        </button>
+    </form>
+
+</div>
+
+<script>
+(function () {
+    const button = document.getElementById("aeromate-button");
+    const panel = document.getElementById("aeromate-panel");
+    const close = document.getElementById("aeromate-close");
+    const form = document.getElementById("aeromate-form");
+    const input = document.getElementById("aeromate-input");
+    const messages = document.getElementById("aeromate-messages");
+    const send = document.getElementById("aeromate-send");
+
+    const chatUrl = "{% url 'travel_assistant:chat' %}";
+    const csrfToken = form.querySelector(
+        "[name=csrfmiddlewaretoken]"
+    ).value;
+
+    let historyLoaded = false;
+
+    function addMessage(text, role) {
+        const div = document.createElement("div");
+
+        div.className =
+            "aeromate-message " +
+            (role === "user" ? "aeromate-user" : "aeromate-bot");
+
+        // textContent prevents HTML/script injection.
+        div.textContent = text;
+
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function loadHistory() {
+        if (historyLoaded) return;
+
+        try {
+            const response = await fetch(chatUrl, {
+                method: "GET",
+                credentials: "same-origin"
+            });
+
+            if (!response.ok) return;
+
+            const data = await response.json();
+
+            if (data.messages && data.messages.length) {
+                messages.innerHTML = "";
+
+                data.messages.forEach(item => {
+                    addMessage(item.message, item.role);
+                });
+            }
+
+            historyLoaded = true;
+
+        } catch (error) {
+            console.error("Chat history error:", error);
+        }
+    }
+
+    button.addEventListener("click", function () {
+        panel.style.display = "block";
+        button.style.display = "none";
+
+        loadHistory();
+        input.focus();
+    });
+
+    close.addEventListener("click", function () {
+        panel.style.display = "none";
+        button.style.display = "block";
+    });
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const message = input.value.trim();
+
+        if (!message || send.disabled) return;
+
+        addMessage(message, "user");
+
+        input.value = "";
+        send.disabled = true;
+        send.textContent = "...";
+
+        try {
+            const response = await fetch(chatUrl, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({
+                    message: message
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                addMessage(
+                    data.error || "Unable to process your question.",
+                    "assistant"
+                );
+            } else {
+                addMessage(data.reply, "assistant");
+            }
+
+        } catch (error) {
+            addMessage(
+                "Connection error. Please try again.",
+                "assistant"
+            );
+        } finally {
+            send.disabled = false;
+            send.textContent = "Send";
+            input.focus();
+        }
+    });
+
+})();
+</script>
+
+<!-- End AeroMate AI -->
+
+</body>
+</html>
