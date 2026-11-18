@@ -37,6 +37,9 @@ ALLOWED_HOSTS = [
     "airline-flight-information-system-production.up.railway.app",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://airline-flight-information-system-production.up.railway.app",
+]
 
 # Application definition
 
